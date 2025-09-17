@@ -1,0 +1,250 @@
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Progress } from './ui/progress';
+import { Badge } from './ui/badge';
+import { Input } from './ui/input';
+import { Plus, Target, CheckCircle2, Clock, TrendingUp } from 'lucide-react';
+
+interface Goal {
+  id: string;
+  title: string;
+  description: string;
+  progress: number;
+  target: number;
+  category: string;
+  deadline: string;
+  completed: boolean;
+}
+
+const mockGoals: Goal[] = [
+  {
+    id: '1',
+    title: 'Daily Meditation',
+    description: 'Meditate for 10 minutes every day',
+    progress: 18,
+    target: 30,
+    category: 'Mindfulness',
+    deadline: '2024-10-17',
+    completed: false,
+  },
+  {
+    id: '2',
+    title: 'Journal Entries',
+    description: 'Write in journal 3 times per week',
+    progress: 8,
+    target: 12,
+    category: 'Reflection',
+    deadline: '2024-09-30',
+    completed: false,
+  },
+  {
+    id: '3',
+    title: 'Exercise Routine',
+    description: 'Complete 20 workout sessions',
+    progress: 15,
+    target: 20,
+    category: 'Physical Health',
+    deadline: '2024-10-01',
+    completed: false,
+  },
+  {
+    id: '4',
+    title: 'Sleep Schedule',
+    description: 'Maintain consistent 8-hour sleep for 2 weeks',
+    progress: 14,
+    target: 14,
+    category: 'Sleep',
+    deadline: '2024-09-20',
+    completed: true,
+  },
+];
+
+export function GoalsSection() {
+  const [goals, setGoals] = useState<Goal[]>(mockGoals);
+  const [newGoal, setNewGoal] = useState('');
+
+  const completedGoals = goals.filter(goal => goal.completed).length;
+  const totalGoals = goals.length;
+  const overallProgress = (completedGoals / totalGoals) * 100;
+
+  const getCategoryColor = (category: string) => {
+    const colors: { [key: string]: string } = {
+      'Mindfulness': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
+      'Reflection': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+      'Physical Health': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+      'Sleep': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300',
+    };
+    return colors[category] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+  };
+
+  const addGoal = () => {
+    if (newGoal.trim()) {
+      const goal: Goal = {
+        id: Date.now().toString(),
+        title: newGoal,
+        description: 'Custom goal',
+        progress: 0,
+        target: 10,
+        category: 'Personal',
+        deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        completed: false,
+      };
+      setGoals([...goals, goal]);
+      setNewGoal('');
+    }
+  };
+
+  const updateGoalProgress = (goalId: string, increment: number) => {
+    setGoals(goals.map(goal => {
+      if (goal.id === goalId) {
+        const newProgress = Math.min(goal.target, Math.max(0, goal.progress + increment));
+        return {
+          ...goal,
+          progress: newProgress,
+          completed: newProgress >= goal.target
+        };
+      }
+      return goal;
+    }));
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Goals Overview */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5 text-blue-500" />
+            Goals Overview
+          </CardTitle>
+          <CardDescription>
+            Track your progress towards mental health goals
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <p className="text-2xl font-bold text-green-600">{completedGoals}</p>
+              <p className="text-sm text-muted-foreground">Completed Goals</p>
+            </div>
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <p className="text-2xl font-bold text-blue-600">{totalGoals - completedGoals}</p>
+              <p className="text-sm text-muted-foreground">Active Goals</p>
+            </div>
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <p className="text-2xl font-bold text-purple-600">{overallProgress.toFixed(0)}%</p>
+              <p className="text-sm text-muted-foreground">Overall Progress</p>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Overall Completion</span>
+              <span>{overallProgress.toFixed(0)}%</span>
+            </div>
+            <Progress value={overallProgress} className="h-2" />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Active Goals */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Active Goals</CardTitle>
+          <CardDescription>
+            Your current mental health objectives
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {goals.map((goal) => {
+            const progressPercentage = (goal.progress / goal.target) * 100;
+            const isOverdue = new Date(goal.deadline) < new Date() && !goal.completed;
+            
+            return (
+              <div key={goal.id} className={`p-4 border rounded-lg space-y-3 ${goal.completed ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : ''}`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className={`font-medium ${goal.completed ? 'line-through text-muted-foreground' : ''}`}>
+                        {goal.title}
+                      </h4>
+                      {goal.completed && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+                    </div>
+                    <p className="text-sm text-muted-foreground">{goal.description}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge className={getCategoryColor(goal.category)} variant="secondary">
+                        {goal.category}
+                      </Badge>
+                      {isOverdue && (
+                        <Badge variant="destructive" className="text-xs">
+                          <Clock className="h-3 w-3 mr-1" />
+                          Overdue
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  {!goal.completed && (
+                    <div className="flex gap-1">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => updateGoalProgress(goal.id, -1)}
+                        disabled={goal.progress <= 0}
+                      >
+                        -
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => updateGoalProgress(goal.id, 1)}
+                        disabled={goal.progress >= goal.target}
+                      >
+                        +
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Progress: {goal.progress} / {goal.target}</span>
+                    <span>{progressPercentage.toFixed(0)}%</span>
+                  </div>
+                  <Progress value={progressPercentage} className="h-2" />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Deadline: {new Date(goal.deadline).toLocaleDateString()}</span>
+                    {!goal.completed && (
+                      <span>{goal.target - goal.progress} remaining</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+
+      {/* Add New Goal */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Plus className="h-5 w-5" />
+            Add New Goal
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2">
+            <Input
+              placeholder="Enter a new goal..."
+              value={newGoal}
+              onChange={(e) => setNewGoal(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && addGoal()}
+            />
+            <Button onClick={addGoal}>Add Goal</Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
