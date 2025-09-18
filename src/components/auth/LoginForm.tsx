@@ -5,6 +5,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import mkuLogo from 'figma:asset/14595c554c029d987635aae1d898f92cd008b33f.png';
+import { loginUser } from '../../utils/auth';
 
 interface LoginFormProps {
   onLogin: (email: string, password: string) => void;
@@ -19,21 +20,10 @@ export function LoginForm({ onLogin, onSwitchToRegister }: LoginFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      
-      const data = await response.json();
-      if (data.success) {
-        localStorage.setItem('token', data.token);
-        onLogin(data.user.email, password);
-      } else {
-        alert(data.error || 'Login failed');
-      }
+      const user = await loginUser(email, password);
+      onLogin(user.email, password);
     } catch (error) {
-      alert('Login failed. Please try again.');
+      alert(error instanceof Error ? error.message : 'Login failed. Please try again.');
     }
   };
 

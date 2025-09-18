@@ -52,6 +52,13 @@ export default function App() {
     setUser(null);
   };
 
+  const getTimeBasedGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
   const currentDate = new Date().toLocaleDateString('en-US', { 
     weekday: 'long', 
     year: 'numeric', 
@@ -120,7 +127,7 @@ export default function App() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-semibold mb-2">Good morning, {user?.firstName}! 👋</h2>
+              <h2 className="text-2xl font-semibold mb-2">{getTimeBasedGreeting()}, {user?.firstName} {user?.lastName}! 👋</h2>
               <p className="text-muted-foreground">{currentDate}</p>
             </div>
             <div className="flex items-center gap-4">
@@ -266,7 +273,7 @@ export default function App() {
           <div className="text-center text-sm text-muted-foreground">
             <p>Remember: You are not alone. Your mental health matters. Take it one day at a time. 💙</p>
             <p className="mt-2">
-              Mount Kenya University Mental Health Awareness Program is a supportive tool for student wellness. For professional help, please consult a licensed therapist or visit the university counseling center.
+              Mount Kenya University Mental Health Awareness Program 2025 is a supportive tool for student wellness. For professional help, please consult a licensed therapist or visit the university counseling center.
             </p>
             <p className="mt-1 text-xs">
               Mount Kenya University - Committed to your academic and personal wellbeing

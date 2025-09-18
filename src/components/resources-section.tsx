@@ -18,46 +18,54 @@ interface Resource {
 const resources: Resource[] = [
   {
     id: '1',
-    title: 'National Suicide Prevention Lifeline',
-    description: 'Free, confidential crisis counseling and mental health crisis services',
+    title: 'Emergency Contact',
+    description: 'Immediate support and crisis intervention for MKU students',
     type: 'crisis',
-    contact: '988',
+    contact: '+254734434907',
     available: '24/7',
   },
   {
     id: '2',
-    title: 'Crisis Text Line',
-    description: 'Text-based crisis counseling for people in crisis situations',
+    title: 'Kenya Mental Health Helpline',
+    description: 'Free, confidential crisis counseling and mental health crisis services',
     type: 'crisis',
-    contact: 'Text HOME to 741741',
+    contact: '0800 720 000',
     available: '24/7',
   },
   {
     id: '3',
-    title: 'NAMI (National Alliance on Mental Illness)',
-    description: 'Educational resources, support groups, and advocacy',
-    type: 'support',
-    website: 'nami.org',
+    title: 'MKU Counseling Center',
+    description: 'Professional counseling services for Mount Kenya University students',
+    type: 'crisis',
+    contact: '+254 700 000 000',
     available: 'Business hours',
   },
   {
     id: '4',
-    title: 'Mental Health America',
-    description: 'Mental health screening tools and educational resources',
-    type: 'educational',
-    website: 'mhanational.org',
-    available: 'Always available',
+    title: 'Kenya Association of Professional Counsellors',
+    description: 'Find licensed counsellors and mental health professionals in Kenya',
+    type: 'support',
+    website: 'kapc.or.ke',
+    available: 'Business hours',
   },
   {
     id: '5',
-    title: 'Psychology Today Therapy Directory',
-    description: 'Find licensed therapists and mental health professionals in your area',
-    type: 'support',
-    website: 'psychologytoday.com',
+    title: 'Ministry of Health - Mental Health',
+    description: 'Government mental health resources and information for Kenyan citizens',
+    type: 'educational',
+    website: 'health.go.ke',
     available: 'Always available',
   },
   {
     id: '6',
+    title: 'Befrienders Kenya',
+    description: 'Emotional support and suicide prevention services in Kenya',
+    type: 'support',
+    contact: '+254 722 178 177',
+    available: '24/7',
+  },
+  {
+    id: '7',
     title: 'Mindfulness-Based Stress Reduction',
     description: 'Evidence-based mindfulness techniques for stress and anxiety',
     type: 'educational',
@@ -116,11 +124,11 @@ export function ResourcesSection() {
           <div className="flex gap-2 mt-2">
             <Button size="sm" variant="destructive" className="h-8">
               <Phone className="h-3 w-3 mr-1" />
-              Call 988
+              Call +254734434907
             </Button>
             <Button size="sm" variant="outline" className="h-8 border-red-300 text-red-700 hover:bg-red-100">
-              <MessageCircle className="h-3 w-3 mr-1" />
-              Text 741741
+              <Phone className="h-3 w-3 mr-1" />
+              Call 0800 720 000
             </Button>
           </div>
         </AlertDescription>

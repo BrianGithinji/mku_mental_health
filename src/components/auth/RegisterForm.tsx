@@ -6,6 +6,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Eye, EyeOff, UserPlus } from 'lucide-react';
 import mkuLogo from 'figma:asset/14595c554c029d987635aae1d898f92cd008b33f.png';
+import { registerUser } from '../../utils/auth';
 
 interface RegisterFormProps {
   onRegister: (userData: {
@@ -41,20 +42,10 @@ export function RegisterForm({ onRegister, onSwitchToLogin }: RegisterFormProps)
     
     try {
       const { confirmPassword, ...userData } = formData;
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData)
-      });
-      
-      const data = await response.json();
-      if (data.success) {
-        onRegister(data.user);
-      } else {
-        alert(data.error || 'Registration failed');
-      }
+      const user = await registerUser(userData);
+      onRegister(user);
     } catch (error) {
-      alert('Registration failed. Please try again.');
+      alert(error instanceof Error ? error.message : 'Registration failed. Please try again.');
     }
   };
 
