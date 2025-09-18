@@ -56,7 +56,7 @@ export function MoodTracker() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex justify-between mb-4">
+          <div className="grid grid-cols-3 sm:flex sm:justify-between gap-2 sm:gap-1 mb-4">
             {moodIcons.map((mood, index) => {
               const IconComponent = mood.icon;
               const moodLevel = index + 1;
@@ -66,9 +66,9 @@ export function MoodTracker() {
                   variant={selectedMood === moodLevel ? "default" : "outline"}
                   size="sm"
                   onClick={() => handleMoodSelect(moodLevel)}
-                  className="flex flex-col gap-1 h-auto p-3"
+                  className="flex flex-col gap-1 h-auto p-2 sm:p-3"
                 >
-                  <IconComponent className={`h-6 w-6 ${mood.color}`} />
+                  <IconComponent className={`h-5 w-5 sm:h-6 sm:w-6 ${mood.color}`} />
                   <span className="text-xs">{moodLevel}</span>
                 </Button>
               );
@@ -93,11 +93,11 @@ export function MoodTracker() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-4 flex justify-between items-center">
+          <div className="mb-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
             <div className="flex items-center gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">Average Mood</p>
-                <p className="text-2xl font-semibold">{averageMood.toFixed(1)}/10</p>
+                <p className="text-xl sm:text-2xl font-semibold">{averageMood.toFixed(1)}/10</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Current Streak</p>
@@ -108,7 +108,7 @@ export function MoodTracker() {
               </div>
             </div>
           </div>
-          <div className="h-64">
+          <div className="h-48 sm:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={moodData}>
                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />

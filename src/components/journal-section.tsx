@@ -103,18 +103,18 @@ export function JournalSection() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-2xl font-bold text-indigo-600">{totalEntries}</p>
-              <p className="text-sm text-muted-foreground">Total Entries</p>
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
+            <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+              <p className="text-lg sm:text-2xl font-bold text-indigo-600">{totalEntries}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Entries</p>
             </div>
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-2xl font-bold text-green-600">{currentStreak}</p>
-              <p className="text-sm text-muted-foreground">Day Streak</p>
+            <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+              <p className="text-lg sm:text-2xl font-bold text-green-600">{currentStreak}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Streak</p>
             </div>
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-2xl font-bold text-purple-600">{averageMood.toFixed(1)}</p>
-              <p className="text-sm text-muted-foreground">Avg. Mood</p>
+            <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+              <p className="text-lg sm:text-2xl font-bold text-purple-600">{averageMood.toFixed(1)}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Mood</p>
             </div>
           </div>
         </CardContent>
@@ -155,14 +155,14 @@ export function JournalSection() {
               />
               
               <div className="space-y-3">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                   <span className="text-sm font-medium">Mood:</span>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 flex-wrap">
                     {moodEmojis.map((emoji, index) => (
                       <button
                         key={index}
                         onClick={() => setNewEntry(prev => ({ ...prev, mood: index + 1 }))}
-                        className={`p-1 text-lg rounded ${newEntry.mood === index + 1 ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
+                        className={`p-1 text-base sm:text-lg rounded ${newEntry.mood === index + 1 ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
                       >
                         {emoji}
                       </button>
@@ -187,9 +187,9 @@ export function JournalSection() {
                 </div>
               </div>
               
-              <div className="flex gap-2">
-                <Button onClick={handleSubmit}>Save Entry</Button>
-                <Button variant="outline" onClick={() => setIsWriting(false)}>Cancel</Button>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button onClick={handleSubmit} className="sm:w-auto">Save Entry</Button>
+                <Button variant="outline" onClick={() => setIsWriting(false)} className="sm:w-auto">Cancel</Button>
               </div>
             </div>
           )}
@@ -207,24 +207,23 @@ export function JournalSection() {
         <CardContent>
           <div className="space-y-4">
             {entries.map((entry) => (
-              <div key={entry.id} className="p-4 border rounded-lg space-y-3">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="font-medium">{entry.title}</h4>
+              <div key={entry.id} className="p-3 sm:p-4 border rounded-lg space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-sm sm:text-base">{entry.title}</h4>
                     <div className="flex items-center gap-2 mt-1">
-                      <Calendar className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">
+                      <Calendar className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                      <span className="text-xs text-muted-foreground truncate">
                         {new Date(entry.date).toLocaleDateString('en-US', { 
-                          weekday: 'long', 
-                          year: 'numeric', 
-                          month: 'long', 
+                          weekday: 'short', 
+                          month: 'short', 
                           day: 'numeric' 
                         })}
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">{moodEmojis[entry.mood - 1]}</span>
+                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                    <span className="text-base sm:text-lg">{moodEmojis[entry.mood - 1]}</span>
                     <span className="text-xs text-muted-foreground">{entry.mood}/5</span>
                   </div>
                 </div>

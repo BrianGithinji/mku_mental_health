@@ -85,62 +85,85 @@ export default function App() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-20 items-center justify-between px-4">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-3">
+        <div className="container mx-auto px-4">
+          {/* Mobile Layout */}
+          <div className="flex sm:hidden h-16 items-center justify-between">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
               <img 
                 src={mkuLogo} 
-                alt="Mount Kenya University Logo" 
-                className="h-10 w-auto"
+                alt="MKU Logo" 
+                className="h-8 w-auto flex-shrink-0"
               />
-              <div className="flex flex-col">
-                <h1 className="text-lg font-semibold leading-tight">Mount Kenya University</h1>
-                <p className="text-sm text-muted-foreground leading-tight">Mental Health Awareness Program</p>
+              <div className="flex flex-col min-w-0 flex-1">
+                <h1 className="text-sm font-semibold leading-tight truncate">Mount Kenya University</h1>
+                <p className="text-xs text-muted-foreground leading-tight truncate">Mental Health Program</p>
               </div>
             </div>
-            <Badge variant="secondary" className="hidden lg:inline-flex">
-              Student Wellness Dashboard
-            </Badge>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
           
-          <div className="flex items-center gap-3">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={toggleDarkMode}
-              className="hidden sm:flex"
-            >
-              {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
-            <Button variant="outline" size="sm">
-              <Settings className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4" />
-            </Button>
+          {/* Desktop Layout */}
+          <div className="hidden sm:flex h-20 items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3">
+                <img 
+                  src={mkuLogo} 
+                  alt="Mount Kenya University Logo" 
+                  className="h-10 w-auto"
+                />
+                <div className="flex flex-col">
+                  <h1 className="text-lg font-semibold leading-tight">Mount Kenya University</h1>
+                  <p className="text-sm text-muted-foreground leading-tight">Mental Health Awareness Program</p>
+                </div>
+              </div>
+              <Badge variant="secondary" className="hidden lg:inline-flex">
+                Student Wellness Dashboard
+              </Badge>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={toggleDarkMode}
+                className="hidden md:flex"
+              >
+                {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
+              <Button variant="outline" size="sm" className="hidden md:flex">
+                <Settings className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
       <div className="container mx-auto p-4 max-w-7xl">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-2xl font-semibold mb-2">{getTimeBasedGreeting()}, {user?.firstName} {user?.lastName}! 👋</h2>
-              <p className="text-muted-foreground">{currentDate}</p>
+              <h2 className="text-xl sm:text-2xl font-semibold mb-2">{getTimeBasedGreeting()}, {user?.firstName} {user?.lastName}! 👋</h2>
+              <p className="text-sm sm:text-base text-muted-foreground">{currentDate}</p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center sm:gap-4 sm:justify-end">
               <div className="text-center">
-                <p className="text-2xl font-bold text-green-600">8.2</p>
+                <p className="text-lg sm:text-2xl font-bold text-green-600">8.2</p>
                 <p className="text-xs text-muted-foreground">Current Mood</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-blue-600">12</p>
+                <p className="text-lg sm:text-2xl font-bold text-blue-600">12</p>
                 <p className="text-xs text-muted-foreground">Day Streak</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-purple-600">85%</p>
+                <p className="text-lg sm:text-2xl font-bold text-purple-600">85%</p>
                 <p className="text-xs text-muted-foreground">Weekly Goal</p>
               </div>
             </div>
@@ -148,7 +171,7 @@ export default function App() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
               <div className="p-2 bg-pink-100 dark:bg-pink-900/20 rounded-lg">
@@ -200,26 +223,28 @@ export default function App() {
 
         {/* Main Content */}
         <Tabs defaultValue="mood" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-fit lg:grid-cols-5">
-            <TabsTrigger value="mood" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-5 h-auto p-1">
+            <TabsTrigger value="mood" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-3">
               <Smile className="h-4 w-4" />
-              <span className="hidden sm:inline">Mood</span>
+              <span className="text-xs sm:text-sm">Mood</span>
             </TabsTrigger>
-            <TabsTrigger value="goals" className="flex items-center gap-2">
+            <TabsTrigger value="goals" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-3">
               <Target className="h-4 w-4" />
-              <span className="hidden sm:inline">Goals</span>
+              <span className="text-xs sm:text-sm">Goals</span>
             </TabsTrigger>
-            <TabsTrigger value="journal" className="flex items-center gap-2">
+            <TabsTrigger value="journal" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-3">
               <BookOpen className="h-4 w-4" />
-              <span className="hidden sm:inline">Journal</span>
+              <span className="text-xs sm:text-sm">Journal</span>
             </TabsTrigger>
-            <TabsTrigger value="mindfulness" className="flex items-center gap-2">
-              <Brain className="h-4 w-4" />
-              <span className="hidden sm:inline">Mindfulness</span>
+            <TabsTrigger value="mindfulness" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-3">
+              <Target className="h-4 w-4" />
+              <span className="text-xs sm:text-sm hidden xs:inline">Mind</span>
+              <span className="text-xs sm:text-sm xs:hidden">🧠</span>
             </TabsTrigger>
-            <TabsTrigger value="resources" className="flex items-center gap-2">
+            <TabsTrigger value="resources" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-3">
               <Shield className="h-4 w-4" />
-              <span className="hidden sm:inline">Resources</span>
+              <span className="text-xs sm:text-sm hidden xs:inline">Help</span>
+              <span className="text-xs sm:text-sm xs:hidden">🛡️</span>
             </TabsTrigger>
           </TabsList>
 
@@ -269,14 +294,17 @@ export default function App() {
         </Card>
 
         {/* Footer */}
-        <footer className="mt-12 py-6 border-t">
-          <div className="text-center text-sm text-muted-foreground">
+        <footer className="mt-8 sm:mt-12 py-4 sm:py-6 border-t">
+          <div className="text-center text-xs sm:text-sm text-muted-foreground space-y-2">
             <p>Remember: You are not alone. Your mental health matters. Take it one day at a time. 💙</p>
-            <p className="mt-2">
+            <p className="hidden sm:block">
               Mount Kenya University Mental Health Awareness Program 2025 is a supportive tool for student wellness. For professional help, please consult a licensed therapist or visit the university counseling center.
             </p>
-            <p className="mt-1 text-xs">
-              Mount Kenya University - Committed to your academic and personal wellbeing
+            <p className="sm:hidden">
+              MKU Mental Health Program 2025. For professional help, consult a licensed therapist.
+            </p>
+            <p className="text-xs">
+              Mount Kenya University - Committed to your wellbeing
             </p>
           </div>
         </footer>

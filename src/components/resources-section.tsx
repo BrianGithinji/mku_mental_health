@@ -121,12 +121,12 @@ export function ResourcesSection() {
         <AlertTitle className="text-red-800 dark:text-red-300">Crisis Support Available 24/7</AlertTitle>
         <AlertDescription className="text-red-700 dark:text-red-400">
           If you're having thoughts of self-harm or suicide, please reach out immediately. You are not alone.
-          <div className="flex gap-2 mt-2">
-            <Button size="sm" variant="destructive" className="h-8">
+          <div className="flex flex-col sm:flex-row gap-2 mt-2">
+            <Button size="sm" variant="destructive" className="h-8 text-xs">
               <Phone className="h-3 w-3 mr-1" />
               Call +254734434907
             </Button>
-            <Button size="sm" variant="outline" className="h-8 border-red-300 text-red-700 hover:bg-red-100">
+            <Button size="sm" variant="outline" className="h-8 border-red-300 text-red-700 hover:bg-red-100 text-xs">
               <Phone className="h-3 w-3 mr-1" />
               Call 0800 720 000
             </Button>
@@ -148,21 +148,21 @@ export function ResourcesSection() {
         <CardContent>
           <div className="space-y-4">
             {resources.filter(r => r.type === 'crisis').map((resource) => (
-              <div key={resource.id} className="p-4 border border-red-200 bg-red-50 dark:bg-red-900/20 rounded-lg">
+              <div key={resource.id} className="p-3 sm:p-4 border border-red-200 bg-red-50 dark:bg-red-900/20 rounded-lg">
                 <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
                       {getResourceIcon(resource.type)}
-                      <h4 className="font-medium text-red-800 dark:text-red-300">{resource.title}</h4>
-                      <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300" variant="secondary">
+                      <h4 className="font-medium text-sm sm:text-base text-red-800 dark:text-red-300">{resource.title}</h4>
+                      <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 text-xs" variant="secondary">
                         {resource.available}
                       </Badge>
                     </div>
-                    <p className="text-sm text-red-700 dark:text-red-400 mb-2">{resource.description}</p>
+                    <p className="text-xs sm:text-sm text-red-700 dark:text-red-400 mb-2">{resource.description}</p>
                     {resource.contact && (
                       <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-red-600" />
-                        <span className="text-sm font-medium text-red-800 dark:text-red-300">{resource.contact}</span>
+                        <Phone className="h-3 w-3 sm:h-4 sm:w-4 text-red-600 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm font-medium text-red-800 dark:text-red-300">{resource.contact}</span>
                       </div>
                     )}
                   </div>
@@ -187,32 +187,30 @@ export function ResourcesSection() {
         <CardContent>
           <div className="grid gap-4">
             {resources.filter(r => r.type !== 'crisis').map((resource) => (
-              <div key={resource.id} className="p-4 border rounded-lg">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      {getResourceIcon(resource.type)}
-                      <h4 className="font-medium">{resource.title}</h4>
-                      <Badge className={getResourceColor(resource.type)} variant="secondary">
-                        {resource.type}
-                      </Badge>
+              <div key={resource.id} className="p-3 sm:p-4 border rounded-lg">
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {getResourceIcon(resource.type)}
+                    <h4 className="font-medium text-sm sm:text-base">{resource.title}</h4>
+                    <Badge className={`${getResourceColor(resource.type)} text-xs`} variant="secondary">
+                      {resource.type}
+                    </Badge>
+                  </div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{resource.description}</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+                      <span>Available: {resource.available}</span>
+                      {resource.website && (
+                        <span className="flex items-center gap-1">
+                          <Globe className="h-3 w-3" />
+                          {resource.website}
+                        </span>
+                      )}
                     </div>
-                    <p className="text-sm text-muted-foreground mb-3">{resource.description}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>Available: {resource.available}</span>
-                        {resource.website && (
-                          <span className="flex items-center gap-1">
-                            <Globe className="h-3 w-3" />
-                            {resource.website}
-                          </span>
-                        )}
-                      </div>
-                      <Button size="sm" variant="outline">
-                        <ExternalLink className="h-3 w-3 mr-1" />
-                        Visit
-                      </Button>
-                    </div>
+                    <Button size="sm" variant="outline" className="text-xs sm:w-auto">
+                      <ExternalLink className="h-3 w-3 mr-1" />
+                      Visit
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -235,13 +233,13 @@ export function ResourcesSection() {
         <CardContent>
           <div className="space-y-6">
             {copingStrategies.map((strategy, index) => (
-              <div key={index} className="p-4 border rounded-lg bg-green-50/50 dark:bg-green-900/10">
-                <h4 className="font-medium text-green-800 dark:text-green-300 mb-2">{strategy.title}</h4>
-                <p className="text-sm text-green-700 dark:text-green-400 mb-3">{strategy.description}</p>
+              <div key={index} className="p-3 sm:p-4 border rounded-lg bg-green-50/50 dark:bg-green-900/10">
+                <h4 className="font-medium text-sm sm:text-base text-green-800 dark:text-green-300 mb-2">{strategy.title}</h4>
+                <p className="text-xs sm:text-sm text-green-700 dark:text-green-400 mb-3">{strategy.description}</p>
                 <div className="space-y-1">
                   {strategy.steps.map((step, stepIndex) => (
-                    <div key={stepIndex} className="flex items-center gap-2 text-sm">
-                      <div className="w-5 h-5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 rounded-full flex items-center justify-center text-xs font-medium">
+                    <div key={stepIndex} className="flex items-start gap-2 text-xs sm:text-sm">
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 mt-0.5">
                         {stepIndex + 1}
                       </div>
                       <span className="text-green-700 dark:text-green-400">{step}</span>

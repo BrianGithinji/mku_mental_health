@@ -109,7 +109,7 @@ function MeditationTimer({ duration, onComplete }: TimerProps) {
 
   return (
     <div className="text-center space-y-4">
-      <div className="text-4xl font-mono font-bold">
+      <div className="text-2xl sm:text-4xl font-mono font-bold">
         {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
       </div>
       <Progress value={progress} className="h-2" />
@@ -172,18 +172,18 @@ export function MindfulnessSection() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-2xl font-bold text-purple-600">{completedToday}</p>
-              <p className="text-sm text-muted-foreground">Sessions Today</p>
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6">
+            <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+              <p className="text-lg sm:text-2xl font-bold text-purple-600">{completedToday}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Sessions</p>
             </div>
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-2xl font-bold text-blue-600">{completedToday * 15}m</p>
-              <p className="text-sm text-muted-foreground">Minutes Practiced</p>
+            <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+              <p className="text-lg sm:text-2xl font-bold text-blue-600">{completedToday * 15}m</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Minutes</p>
             </div>
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-2xl font-bold text-green-600">7</p>
-              <p className="text-sm text-muted-foreground">Day Streak</p>
+            <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+              <p className="text-lg sm:text-2xl font-bold text-green-600">7</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Streak</p>
             </div>
           </div>
           
@@ -204,12 +204,12 @@ export function MindfulnessSection() {
             <ImageWithFallback 
               src="https://images.unsplash.com/photo-1687180948607-9ba1dd045e10?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZWFjZWZ1bCUyMG1lZGl0YXRpb24lMjB3ZWxsbmVzc3xlbnwxfHx8fDE3NTgwODQyNjF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
               alt="Peaceful meditation scene"
-              className="w-full h-48 object-cover rounded-t-lg"
+              className="w-full h-32 sm:h-48 object-cover rounded-t-lg"
             />
             <div className="absolute inset-0 bg-black/40 rounded-t-lg flex items-center justify-center">
               <div className="text-center text-white">
-                <h3 className="text-xl font-semibold mb-2">Featured: Evening Calm</h3>
-                <p className="text-sm opacity-90 mb-4">Wind down with guided relaxation</p>
+                <h3 className="text-lg sm:text-xl font-semibold mb-2">Featured: Evening Calm</h3>
+                <p className="text-xs sm:text-sm opacity-90 mb-4">Wind down with guided relaxation</p>
                 <Button variant="secondary">
                   <Play className="h-4 w-4 mr-2" />
                   Start Session
@@ -254,24 +254,24 @@ export function MindfulnessSection() {
             {activities.map((activity) => (
               <div 
                 key={activity.id} 
-                className={`p-4 border rounded-lg space-y-3 ${activity.completed ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : ''}`}
+                className={`p-3 sm:p-4 border rounded-lg space-y-3 ${activity.completed ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : ''}`}
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                       {getCategoryIcon(activity.category)}
-                      <h4 className={`font-medium ${activity.completed ? 'text-green-700 dark:text-green-300' : ''}`}>
+                      <h4 className={`font-medium text-sm sm:text-base ${activity.completed ? 'text-green-700 dark:text-green-300' : ''}`}>
                         {activity.title}
                       </h4>
-                      {activity.completed && <Badge variant="secondary" className="bg-green-100 text-green-800">Completed</Badge>}
+                      {activity.completed && <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">Done</Badge>}
                     </div>
-                    <p className="text-sm text-muted-foreground mb-2">{activity.description}</p>
-                    <div className="flex items-center gap-2">
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-2">{activity.description}</p>
+                    <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                       <Badge variant="outline" className="text-xs">
                         <Clock className="h-3 w-3 mr-1" />
                         {activity.duration}m
                       </Badge>
-                      <Badge className={getDifficultyColor(activity.difficulty)} variant="secondary">
+                      <Badge className={`${getDifficultyColor(activity.difficulty)} text-xs`} variant="secondary">
                         {activity.difficulty}
                       </Badge>
                       <Badge variant="outline" className="text-xs">
@@ -279,15 +279,16 @@ export function MindfulnessSection() {
                       </Badge>
                     </div>
                   </div>
-                  <div className="ml-4">
+                  <div className="flex-shrink-0">
                     {!activity.completed && (
                       <Button 
                         onClick={() => setSelectedActivity(activity)}
                         disabled={selectedActivity?.id === activity.id}
                         size="sm"
+                        className="text-xs px-2"
                       >
-                        <Play className="h-4 w-4 mr-1" />
-                        Start
+                        <Play className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                        <span className="hidden sm:inline">Start</span>
                       </Button>
                     )}
                   </div>
@@ -307,21 +308,21 @@ export function MindfulnessSection() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Button variant="outline" className="h-20 flex flex-col gap-1">
-              <Sun className="h-5 w-5" />
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+            <Button variant="outline" className="h-16 sm:h-20 flex flex-col gap-1">
+              <Sun className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="text-xs">4-7-8 Breathing</span>
             </Button>
-            <Button variant="outline" className="h-20 flex flex-col gap-1">
-              <Moon className="h-5 w-5" />
+            <Button variant="outline" className="h-16 sm:h-20 flex flex-col gap-1">
+              <Moon className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="text-xs">Quick Scan</span>
             </Button>
-            <Button variant="outline" className="h-20 flex flex-col gap-1">
-              <Leaf className="h-5 w-5" />
+            <Button variant="outline" className="h-16 sm:h-20 flex flex-col gap-1">
+              <Leaf className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="text-xs">Gratitude</span>
             </Button>
-            <Button variant="outline" className="h-20 flex flex-col gap-1">
-              <Brain className="h-5 w-5" />
+            <Button variant="outline" className="h-16 sm:h-20 flex flex-col gap-1">
+              <Brain className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="text-xs">Focus Reset</span>
             </Button>
           </div>

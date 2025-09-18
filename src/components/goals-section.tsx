@@ -123,18 +123,18 @@ export function GoalsSection() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-2xl font-bold text-green-600">{completedGoals}</p>
-              <p className="text-sm text-muted-foreground">Completed Goals</p>
+          <div className="grid grid-cols-3 sm:grid-cols-3 gap-2 sm:gap-4 mb-6">
+            <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+              <p className="text-lg sm:text-2xl font-bold text-green-600">{completedGoals}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Completed</p>
             </div>
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-2xl font-bold text-blue-600">{totalGoals - completedGoals}</p>
-              <p className="text-sm text-muted-foreground">Active Goals</p>
+            <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+              <p className="text-lg sm:text-2xl font-bold text-blue-600">{totalGoals - completedGoals}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Active</p>
             </div>
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-2xl font-bold text-purple-600">{overallProgress.toFixed(0)}%</p>
-              <p className="text-sm text-muted-foreground">Overall Progress</p>
+            <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+              <p className="text-lg sm:text-2xl font-bold text-purple-600">{overallProgress.toFixed(0)}%</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Progress</p>
             </div>
           </div>
           
@@ -162,18 +162,18 @@ export function GoalsSection() {
             const isOverdue = new Date(goal.deadline) < new Date() && !goal.completed;
             
             return (
-              <div key={goal.id} className={`p-4 border rounded-lg space-y-3 ${goal.completed ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : ''}`}>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
+              <div key={goal.id} className={`p-3 sm:p-4 border rounded-lg space-y-3 ${goal.completed ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : ''}`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h4 className={`font-medium ${goal.completed ? 'line-through text-muted-foreground' : ''}`}>
+                      <h4 className={`font-medium text-sm sm:text-base ${goal.completed ? 'line-through text-muted-foreground' : ''}`}>
                         {goal.title}
                       </h4>
-                      {goal.completed && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+                      {goal.completed && <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />}
                     </div>
-                    <p className="text-sm text-muted-foreground">{goal.description}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <Badge className={getCategoryColor(goal.category)} variant="secondary">
+                    <p className="text-xs sm:text-sm text-muted-foreground">{goal.description}</p>
+                    <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-2">
+                      <Badge className={`${getCategoryColor(goal.category)} text-xs`} variant="secondary">
                         {goal.category}
                       </Badge>
                       {isOverdue && (
@@ -185,12 +185,13 @@ export function GoalsSection() {
                     </div>
                   </div>
                   {!goal.completed && (
-                    <div className="flex gap-1">
+                    <div className="flex gap-1 flex-shrink-0">
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => updateGoalProgress(goal.id, -1)}
                         disabled={goal.progress <= 0}
+                        className="h-8 w-8 p-0"
                       >
                         -
                       </Button>
@@ -199,6 +200,7 @@ export function GoalsSection() {
                         variant="outline"
                         onClick={() => updateGoalProgress(goal.id, 1)}
                         disabled={goal.progress >= goal.target}
+                        className="h-8 w-8 p-0"
                       >
                         +
                       </Button>
@@ -234,14 +236,15 @@ export function GoalsSection() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Input
               placeholder="Enter a new goal..."
               value={newGoal}
               onChange={(e) => setNewGoal(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && addGoal()}
+              className="flex-1"
             />
-            <Button onClick={addGoal}>Add Goal</Button>
+            <Button onClick={addGoal} className="sm:w-auto">Add Goal</Button>
           </div>
         </CardContent>
       </Card>
