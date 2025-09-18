@@ -207,7 +207,13 @@ export function ResourcesSection() {
                         </span>
                       )}
                     </div>
-                    <Button size="sm" variant="outline" className="text-xs sm:w-auto">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="text-xs sm:w-auto"
+                      onClick={() => window.open(`https://${resource.website}`, '_blank')}
+                      disabled={!resource.website}
+                    >
                       <ExternalLink className="h-3 w-3 mr-1" />
                       Visit
                     </Button>

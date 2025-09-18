@@ -38,7 +38,10 @@ export default function App() {
 
   const handleLogin = (email: string, password: string) => {
     // Simple authentication - in real app, validate against backend
-    setUser({ firstName: 'Student', lastName: 'User', email });
+    // Extract name from email for demo purposes
+    const emailName = email.split('@')[0];
+    const firstName = emailName.charAt(0).toUpperCase() + emailName.slice(1);
+    setUser({ firstName, lastName: '', email });
     setIsAuthenticated(true);
   };
 
@@ -150,7 +153,7 @@ export default function App() {
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-xl sm:text-2xl font-semibold mb-2">{getTimeBasedGreeting()}, {user?.firstName} {user?.lastName}! 👋</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold mb-2">{getTimeBasedGreeting()}, {user?.firstName}{user?.lastName ? ` ${user.lastName}` : ''}! 👋</h2>
               <p className="text-sm sm:text-base text-muted-foreground">{currentDate}</p>
             </div>
             <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center sm:gap-4 sm:justify-end">
@@ -305,6 +308,9 @@ export default function App() {
             </p>
             <p className="text-xs">
               Mount Kenya University - Committed to your wellbeing
+            </p>
+            <p className="text-xs mt-4 pt-2 border-t border-muted">
+              Copyright © Mount Kenya University 2025
             </p>
           </div>
         </footer>
