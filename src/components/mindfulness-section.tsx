@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 import { Progress } from './ui/progress';
 import { Badge } from './ui/badge';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { Play, Pause, RotateCcw, Brain, Leaf, Sun, Moon, Clock } from 'lucide-react';
+import { Play, Pause, RotateCcw, Brain, Leaf, Sun, Moon, Clock, Volume2, VolumeX } from 'lucide-react';
 
 interface MindfulnessActivity {
   id: string;
@@ -128,11 +128,38 @@ function MeditationTimer({ duration, onComplete }: TimerProps) {
 export function MindfulnessSection() {
   const [selectedActivity, setSelectedActivity] = useState<MindfulnessActivity | null>(null);
   const [completedToday, setCompletedToday] = useState(2);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   
   const handleActivityComplete = () => {
     if (selectedActivity) {
       setCompletedToday(prev => prev + 1);
       setSelectedActivity(null);
+    }
+    if (audio) {
+      audio.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const startFeaturedSession = () => {
+    const newAudio = new Audio('/youtube-background-music-lofi-398315.mp3');
+    newAudio.loop = true;
+    newAudio.volume = 0.3;
+    setAudio(newAudio);
+    newAudio.play();
+    setIsPlaying(true);
+  };
+
+  const toggleAudio = () => {
+    if (audio) {
+      if (isPlaying) {
+        audio.pause();
+        setIsPlaying(false);
+      } else {
+        audio.play();
+        setIsPlaying(true);
+      }
     }
   };
 
@@ -201,19 +228,26 @@ export function MindfulnessSection() {
       <Card>
         <CardContent className="p-0">
           <div className="relative">
-            <ImageWithFallback 
-              src="https://images.unsplash.com/photo-1687180948607-9ba1dd045e10?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZWFjZWZ1bCUyMG1lZGl0YXRpb24lMjB3ZWxsbmVzc3xlbnwxfHx8fDE3NTgwODQyNjF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-              alt="Peaceful meditation scene"
+            <img 
+              src="/mku fou-Picsart-AiImageEnhancer.jpeg"
+              alt="Mount Kenya University"
               className="w-full h-32 sm:h-48 object-cover rounded-t-lg"
             />
             <div className="absolute inset-0 bg-black/40 rounded-t-lg flex items-center justify-center">
               <div className="text-center text-white">
                 <h3 className="text-lg sm:text-xl font-semibold mb-2">Featured: Evening Calm</h3>
                 <p className="text-xs sm:text-sm opacity-90 mb-4">Wind down with guided relaxation</p>
-                <Button variant="secondary">
-                  <Play className="h-4 w-4 mr-2" />
-                  Start Session
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="secondary" onClick={startFeaturedSession}>
+                    <Play className="h-4 w-4 mr-2" />
+                    Start Session
+                  </Button>
+                  {audio && (
+                    <Button variant="secondary" size="sm" onClick={toggleAudio}>
+                      {isPlaying ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -282,7 +316,15 @@ export function MindfulnessSection() {
                   <div className="flex-shrink-0">
                     {!activity.completed && (
                       <Button 
-                        onClick={() => setSelectedActivity(activity)}
+                        onClick={() => {
+                          setSelectedActivity(activity);
+                          const newAudio = new Audio('/youtube-background-music-lofi-398315.mp3');
+                          newAudio.loop = true;
+                          newAudio.volume = 0.2;
+                          setAudio(newAudio);
+                          newAudio.play();
+                          setIsPlaying(true);
+                        }}
                         disabled={selectedActivity?.id === activity.id}
                         size="sm"
                         className="text-xs px-2"
