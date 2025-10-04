@@ -94,17 +94,17 @@ export function RegisterForm({ onRegister, onSwitchToLogin }: RegisterFormProps)
               <Input
                 id="email"
                 type="email"
-                placeholder="student@mku.ac.ke"
+                placeholder="bsccs202459607@mylife.mku.ac.ke"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="studentId">Student ID</Label>
+              <Label htmlFor="studentId">Student / Staff ID</Label>
               <Input
                 id="studentId"
-                placeholder="MKU/2024/001"
+                placeholder="BSCCS/2024/59607 or MKU/2024/001"
                 value={formData.studentId}
                 onChange={(e) => handleInputChange('studentId', e.target.value)}
                 required

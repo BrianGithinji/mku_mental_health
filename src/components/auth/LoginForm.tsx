@@ -46,7 +46,7 @@ export function LoginForm({ onLogin, onSwitchToRegister }: LoginFormProps) {
               <Input
                 id="email"
                 type="email"
-                placeholder="student@mku.ac.ke"
+                placeholder="bsccs202459607@mylife.mku.ac.ke"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

@@ -37,7 +37,7 @@ const resources: Resource[] = [
     title: 'MKU Counseling Center',
     description: 'Professional counseling services for Mount Kenya University students',
     type: 'crisis',
-    contact: '+254 700 000 000',
+    contact: '+254 709 153 204',
     available: 'Business hours',
   },
   {
@@ -207,13 +207,7 @@ export function ResourcesSection() {
                         </span>
                       )}
                     </div>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="text-xs sm:w-auto"
-                      onClick={() => window.open(`https://${resource.website}`, '_blank')}
-                      disabled={!resource.website}
-                    >
+                    <Button size="sm" variant="outline" className="text-xs sm:w-auto">
                       <ExternalLink className="h-3 w-3 mr-1" />
                       Visit
                     </Button>
