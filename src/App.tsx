@@ -30,7 +30,7 @@ export default function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
-  const [user, setUser] = useState<{ firstName: string; lastName: string; email: string } | null>(null);
+  const [user, setUser] = useState<{ firstName: string; lastName: string; email: string; gender?: string } | null>(null);
   const [userStats, setUserStats] = useState<UserStats>({ moodAverage: 0, currentStreak: 0, weeklyGoalProgress: 0, totalJournalEntries: 0, totalMindfulnessMinutes: 0 });
 
   const toggleDarkMode = () => {
@@ -41,8 +41,8 @@ export default function App() {
   const handleLogin = (email: string, password: string) => {
     // Get user data from localStorage
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    if (currentUser.firstName && currentUser.lastName) {
-      setUser({ firstName: currentUser.firstName, lastName: currentUser.lastName, email: currentUser.email });
+    if (currentUser.first_name && currentUser.last_name) {
+      setUser({ firstName: currentUser.first_name, lastName: currentUser.last_name, email: currentUser.email, gender: currentUser.gender });
     } else {
       // Fallback if no stored user data
       const emailName = email.split('@')[0];
@@ -54,7 +54,7 @@ export default function App() {
   };
 
   const handleRegister = (userData: any) => {
-    setUser({ firstName: userData.firstName, lastName: userData.lastName, email: userData.email });
+    setUser({ firstName: userData.first_name, lastName: userData.last_name, email: userData.email, gender: userData.gender });
     setIsAuthenticated(true);
     loadUserStats();
   };
@@ -171,23 +171,25 @@ export default function App() {
       <div className="container mx-auto p-4 max-w-7xl">
         {/* Welcome Section */}
         <div className="mb-6 sm:mb-8">
-          <div className="flex flex-col gap-4">
-            <div>
-              <h2 className="text-xl sm:text-2xl font-semibold mb-2">{getTimeBasedGreeting()}, {user?.firstName}{user?.lastName ? ` ${user.lastName}` : ''}! 👋</h2>
-              <p className="text-sm sm:text-base text-muted-foreground">{currentDate}</p>
-            </div>
-            <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center sm:gap-4 sm:justify-end">
-              <div className="text-center">
-                <p className="text-lg sm:text-2xl font-bold text-green-600">{userStats.moodAverage > 0 ? userStats.moodAverage.toFixed(1) : '-'}</p>
-                <p className="text-xs text-muted-foreground">Mood Average</p>
+          <div className={`relative p-6 rounded-2xl border-2 ${user?.gender === 'female' ? 'border-pink-300 bg-pink-50/30 dark:bg-pink-900/10 animate-pulse-border-pink' : 'border-blue-300 bg-blue-50/30 dark:bg-blue-900/10 animate-pulse-border'}`}>
+            <div className="flex flex-col gap-4">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-semibold mb-2">{getTimeBasedGreeting()}, {user?.firstName}{user?.lastName ? ` ${user.lastName}` : ''}! 👋</h2>
+                <p className="text-sm sm:text-base text-muted-foreground">{currentDate}</p>
               </div>
-              <div className="text-center">
-                <p className="text-lg sm:text-2xl font-bold text-blue-600">{userStats.currentStreak}</p>
-                <p className="text-xs text-muted-foreground">Day Streak</p>
-              </div>
-              <div className="text-center">
-                <p className="text-lg sm:text-2xl font-bold text-purple-600">{userStats.weeklyGoalProgress.toFixed(0)}%</p>
-                <p className="text-xs text-muted-foreground">Goal Progress</p>
+              <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center sm:gap-4 sm:justify-end">
+                <div className="text-center">
+                  <p className="text-lg sm:text-2xl font-bold text-green-600">{userStats.moodAverage > 0 ? userStats.moodAverage.toFixed(1) : '0'}</p>
+                  <p className="text-xs text-muted-foreground">Mood Average</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-lg sm:text-2xl font-bold text-blue-600">{userStats.currentStreak}</p>
+                  <p className="text-xs text-muted-foreground">Day Streak</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-lg sm:text-2xl font-bold text-purple-600">{userStats.weeklyGoalProgress.toFixed(0)}%</p>
+                  <p className="text-xs text-muted-foreground">Goal Progress</p>
+                </div>
               </div>
             </div>
           </div>

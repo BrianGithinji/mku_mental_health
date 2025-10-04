@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { firstName, lastName, email, studentId, course, password } = req.body;
+  const { firstName, lastName, email, studentId, course, gender, password } = req.body;
 
   try {
     const client = await clientPromise;
@@ -31,6 +31,7 @@ export default async function handler(req, res) {
       email,
       student_id: studentId,
       course,
+      gender,
       password_hash: passwordHash,
       created_at: new Date()
     });

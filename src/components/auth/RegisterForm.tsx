@@ -27,6 +27,7 @@ export function RegisterForm({ onRegister, onSwitchToLogin }: RegisterFormProps)
     email: '',
     studentId: '',
     course: '',
+    gender: '',
     password: '',
     confirmPassword: ''
   });
@@ -122,6 +123,19 @@ export function RegisterForm({ onRegister, onSwitchToLogin }: RegisterFormProps)
                   <SelectItem value="psychology">Psychology</SelectItem>
                   <SelectItem value="nursing">Nursing</SelectItem>
                   <SelectItem value="education">Education</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="gender">Gender</Label>
+              <Select onValueChange={(value) => handleInputChange('gender', value)} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select your gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>

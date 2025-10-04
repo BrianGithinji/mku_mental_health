@@ -41,7 +41,7 @@ export interface UserStats {
 class DataService {
   private getCurrentUserId(): string {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    return currentUser.id || '1';
+    return currentUser._id || '1';
   }
 
   private async apiCall(endpoint: string, options: RequestInit = {}) {
@@ -67,8 +67,10 @@ class DataService {
     try {
       return await this.apiCall('/api/data/mood');
     } catch (error) {
-      console.error('Failed to fetch mood entries:', error);
-      return [];
+      // Fallback to localStorage
+      const userId = this.getCurrentUserId();
+      const entries = JSON.parse(localStorage.getItem('moodEntries') || '[]');
+      return entries.filter((entry: MoodEntry) => entry.user_id === userId);
     }
   }
 
@@ -79,8 +81,19 @@ class DataService {
         body: JSON.stringify({ mood, note }),
       });
     } catch (error) {
-      console.error('Failed to add mood entry:', error);
-      return null;
+      // Fallback to localStorage
+      const userId = this.getCurrentUserId();
+      const entries = JSON.parse(localStorage.getItem('moodEntries') || '[]');
+      const newEntry: MoodEntry = {
+        _id: Date.now().toString(),
+        user_id: userId,
+        date: new Date().toISOString().split('T')[0],
+        mood,
+        note
+      };
+      entries.push(newEntry);
+      localStorage.setItem('moodEntries', JSON.stringify(entries));
+      return newEntry;
     }
   }
 
@@ -89,8 +102,10 @@ class DataService {
     try {
       return await this.apiCall('/api/data/goals');
     } catch (error) {
-      console.error('Failed to fetch goals:', error);
-      return [];
+      // Fallback to localStorage
+      const userId = this.getCurrentUserId();
+      const goals = JSON.parse(localStorage.getItem('goals') || '[]');
+      return goals.filter((goal: Goal) => goal.user_id === userId);
     }
   }
 
@@ -101,8 +116,24 @@ class DataService {
         body: JSON.stringify({ title, description, target, category, deadline }),
       });
     } catch (error) {
-      console.error('Failed to add goal:', error);
-      return null;
+      // Fallback to localStorage
+      const userId = this.getCurrentUserId();
+      const goals = JSON.parse(localStorage.getItem('goals') || '[]');
+      const newGoal: Goal = {
+        _id: Date.now().toString(),
+        user_id: userId,
+        title,
+        description,
+        progress: 0,
+        target,
+        category,
+        deadline,
+        completed: false,
+        created_at: new Date().toISOString()
+      };
+      goals.push(newGoal);
+      localStorage.setItem('goals', JSON.stringify(goals));
+      return newGoal;
     }
   }
 
@@ -113,7 +144,19 @@ class DataService {
         body: JSON.stringify({ goalId, progress }),
       });
     } catch (error) {
-      console.error('Failed to update goal progress:', error);
+      // Fallback to localStorage
+      const goals = JSON.parse(localStorage.getItem('goals') || '[]');
+      const updatedGoals = goals.map((goal: Goal) => {
+        if (goal._id === goalId) {
+          return {
+            ...goal,
+            progress,
+            completed: progress >= goal.target
+          };
+        }
+        return goal;
+      });
+      localStorage.setItem('goals', JSON.stringify(updatedGoals));
     }
   }
 
@@ -123,8 +166,10 @@ class DataService {
       const entries = await this.apiCall('/api/data/journal');
       return entries;
     } catch (error) {
-      console.error('Failed to fetch journal entries:', error);
-      return [];
+      // Fallback to localStorage
+      const userId = this.getCurrentUserId();
+      const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+      return entries.filter((entry: JournalEntry) => entry.user_id === userId);
     }
   }
 
@@ -135,8 +180,21 @@ class DataService {
         body: JSON.stringify({ title, content, mood, tags }),
       });
     } catch (error) {
-      console.error('Failed to add journal entry:', error);
-      return null;
+      // Fallback to localStorage
+      const userId = this.getCurrentUserId();
+      const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+      const newEntry: JournalEntry = {
+        _id: Date.now().toString(),
+        user_id: userId,
+        date: new Date().toISOString().split('T')[0],
+        title,
+        content,
+        mood,
+        tags
+      };
+      entries.push(newEntry);
+      localStorage.setItem('journalEntries', JSON.stringify(entries));
+      return newEntry;
     }
   }
 
