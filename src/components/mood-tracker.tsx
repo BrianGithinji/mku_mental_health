@@ -1,26 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Progress } from './ui/progress';
 import { Badge } from './ui/badge';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { Smile, Meh, Frown, Heart, Star } from 'lucide-react';
-
-interface MoodEntry {
-  date: string;
-  mood: number;
-  note?: string;
-}
-
-const moodData = [
-  { date: 'Mon', mood: 7 },
-  { date: 'Tue', mood: 6 },
-  { date: 'Wed', mood: 8 },
-  { date: 'Thu', mood: 5 },
-  { date: 'Fri', mood: 9 },
-  { date: 'Sat', mood: 7 },
-  { date: 'Sun', mood: 8 },
-];
+import { dataService, MoodEntry } from '../utils/dataService';
 
 const moodIcons = [
   { icon: Frown, color: 'text-red-500', label: 'Very Low' },
@@ -33,14 +18,40 @@ const moodIcons = [
 
 export function MoodTracker() {
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
-  const [todayMood, setTodayMood] = useState<number>(7);
+  const [moodEntries, setMoodEntries] = useState<MoodEntry[]>([]);
+  const [moodData, setMoodData] = useState<{ date: string; mood: number }[]>([]);
+
+  useEffect(() => {
+    loadMoodData();
+  }, []);
+
+  const loadMoodData = () => {
+    const entries = dataService.getMoodEntries();
+    setMoodEntries(entries);
+    
+    // Get last 7 days of mood data
+    const last7Days = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      const entry = entries.find(e => e.date === dateStr);
+      const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+      last7Days.push({ date: dayName, mood: entry ? entry.mood : 0 });
+    }
+    setMoodData(last7Days);
+  };
 
   const handleMoodSelect = (moodLevel: number) => {
     setSelectedMood(moodLevel);
-    setTodayMood(moodLevel);
+    dataService.addMoodEntry(moodLevel);
+    loadMoodData();
   };
 
-  const averageMood = moodData.reduce((sum, entry) => sum + entry.mood, 0) / moodData.length;
+  const averageMood = moodEntries.length > 0 
+    ? moodEntries.reduce((sum, entry) => sum + entry.mood, 0) / moodEntries.length 
+    : 0;
 
   return (
     <div className="space-y-6">
@@ -97,13 +108,13 @@ export function MoodTracker() {
             <div className="flex items-center gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">Average Mood</p>
-                <p className="text-xl sm:text-2xl font-semibold">{averageMood.toFixed(1)}/10</p>
+                <p className="text-xl sm:text-2xl font-semibold">{averageMood > 0 ? averageMood.toFixed(1) : '0'}/10</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Current Streak</p>
+                <p className="text-sm text-muted-foreground">Total Entries</p>
                 <Badge variant="secondary" className="text-sm">
                   <Star className="h-3 w-3 mr-1" />
-                  5 days
+                  {moodEntries.length} entries
                 </Badge>
               </div>
             </div>
@@ -134,25 +145,33 @@ export function MoodTracker() {
           <CardTitle>Weekly Insights</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-            <div>
-              <p className="font-medium text-green-800 dark:text-green-300">Great Progress!</p>
-              <p className="text-sm text-green-600 dark:text-green-400">
-                Your mood improved 23% this week
-              </p>
+          {moodEntries.length > 0 ? (
+            <>
+              <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <div>
+                  <p className="font-medium text-green-800 dark:text-green-300">Keep it up!</p>
+                  <p className="text-sm text-green-600 dark:text-green-400">
+                    You've logged {moodEntries.length} mood entries
+                  </p>
+                </div>
+                <Smile className="h-8 w-8 text-green-500" />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Highest mood:</span>
+                  <span className="text-green-600">{Math.max(...moodEntries.map(e => e.mood))}/10</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Recent average:</span>
+                  <span className="text-blue-600">{averageMood.toFixed(1)}/10</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="text-center p-6 text-muted-foreground">
+              <p>Start tracking your mood to see insights here!</p>
             </div>
-            <Smile className="h-8 w-8 text-green-500" />
-          </div>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Best day: Friday</span>
-              <span className="text-green-600">9/10</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span>Most challenging: Thursday</span>
-              <span className="text-orange-600">5/10</span>
-            </div>
-          </div>
+          )}
         </CardContent>
       </Card>
     </div>

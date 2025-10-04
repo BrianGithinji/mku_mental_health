@@ -1,67 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge';
 import { BookOpen, Plus, Calendar, Heart, Lightbulb, Zap } from 'lucide-react';
-
-interface JournalEntry {
-  id: string;
-  date: string;
-  title: string;
-  content: string;
-  mood: number;
-  tags: string[];
-}
-
-const mockEntries: JournalEntry[] = [
-  {
-    id: '1',
-    date: '2024-09-17',
-    title: 'Morning Reflection',
-    content: 'Started the day with meditation and felt really centered. The breathing exercises helped me prepare for the challenging meeting I had scheduled. Grateful for small moments of peace.',
-    mood: 8,
-    tags: ['gratitude', 'meditation', 'work']
-  },
-  {
-    id: '2',
-    date: '2024-09-16',
-    title: 'Overcoming Anxiety',
-    content: 'Had a tough day dealing with anxiety about the upcoming presentation. Used the 5-4-3-2-1 grounding technique which helped. Reminded myself that its okay to feel nervous.',
-    mood: 6,
-    tags: ['anxiety', 'coping', 'presentation']
-  },
-  {
-    id: '3',
-    date: '2024-09-15',
-    title: 'Weekend Recharge',
-    content: 'Spent quality time with family and friends. Realized how important social connections are for my mental health. Feeling recharged and ready for the week ahead.',
-    mood: 9,
-    tags: ['family', 'social', 'recharge']
-  },
-];
+import { dataService, JournalEntry } from '../utils/dataService';
 
 const moodEmojis = ['😔', '😟', '😐', '😊', '😄', '🤩'];
 const suggestedTags = ['gratitude', 'anxiety', 'work', 'family', 'meditation', 'exercise', 'social', 'reflection', 'goals', 'self-care'];
 
 export function JournalSection() {
-  const [entries, setEntries] = useState<JournalEntry[]>(mockEntries);
+  const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [newEntry, setNewEntry] = useState({ title: '', content: '', mood: 5, tags: [] as string[] });
   const [isWriting, setIsWriting] = useState(false);
 
+  useEffect(() => {
+    loadJournalEntries();
+  }, []);
+
+  const loadJournalEntries = () => {
+    const userEntries = dataService.getJournalEntries();
+    setEntries(userEntries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+  };
+
   const handleSubmit = () => {
     if (newEntry.title && newEntry.content) {
-      const entry: JournalEntry = {
-        id: Date.now().toString(),
-        date: new Date().toISOString().split('T')[0],
-        title: newEntry.title,
-        content: newEntry.content,
-        mood: newEntry.mood,
-        tags: newEntry.tags,
-      };
-      setEntries([entry, ...entries]);
+      dataService.addJournalEntry(newEntry.title, newEntry.content, newEntry.mood, newEntry.tags);
       setNewEntry({ title: '', content: '', mood: 5, tags: [] });
       setIsWriting(false);
+      loadJournalEntries();
     }
   };
 
@@ -86,8 +53,8 @@ export function JournalSection() {
   };
 
   const totalEntries = entries.length;
-  const averageMood = entries.reduce((sum, entry) => sum + entry.mood, 0) / totalEntries;
-  const currentStreak = 7; // Mock data
+  const averageMood = entries.length > 0 ? entries.reduce((sum, entry) => sum + entry.mood, 0) / totalEntries : 0;
+  const currentStreak = entries.length; // Simplified streak calculation
 
   return (
     <div className="space-y-6">
@@ -110,10 +77,10 @@ export function JournalSection() {
             </div>
             <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
               <p className="text-lg sm:text-2xl font-bold text-green-600">{currentStreak}</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">Streak</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Total</p>
             </div>
             <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
-              <p className="text-lg sm:text-2xl font-bold text-purple-600">{averageMood.toFixed(1)}</p>
+              <p className="text-lg sm:text-2xl font-bold text-purple-600">{averageMood > 0 ? averageMood.toFixed(1) : '0'}</p>
               <p className="text-xs sm:text-sm text-muted-foreground">Mood</p>
             </div>
           </div>
@@ -206,7 +173,7 @@ export function JournalSection() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {entries.map((entry) => (
+            {entries.length > 0 ? entries.map((entry) => (
               <div key={entry.id} className="p-3 sm:p-4 border rounded-lg space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
@@ -224,7 +191,7 @@ export function JournalSection() {
                   </div>
                   <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                     <span className="text-base sm:text-lg">{moodEmojis[entry.mood - 1]}</span>
-                    <span className="text-xs text-muted-foreground">{entry.mood}/5</span>
+                    <span className="text-xs text-muted-foreground">{entry.mood}/6</span>
                   </div>
                 </div>
                 
@@ -242,7 +209,11 @@ export function JournalSection() {
                   ))}
                 </div>
               </div>
-            ))}
+            )) : (
+              <div className="text-center p-6 text-muted-foreground">
+                <p>No journal entries yet. Start writing your first entry above!</p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -257,28 +228,36 @@ export function JournalSection() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-              <Zap className="h-5 w-5 text-blue-500" />
-              <div>
-                <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
-                  Most frequent theme: Gratitude
-                </p>
-                <p className="text-xs text-blue-600 dark:text-blue-400">
-                  You've mentioned gratitude in 60% of your entries this month
-                </p>
+            {entries.length > 0 ? (
+              <>
+                <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <Zap className="h-5 w-5 text-blue-500" />
+                  <div>
+                    <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
+                      Great progress!
+                    </p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">
+                      You've written {totalEntries} journal entries
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <Heart className="h-5 w-5 text-green-500" />
+                  <div>
+                    <p className="text-sm font-medium text-green-800 dark:text-green-300">
+                      Average mood: {averageMood.toFixed(1)}/6
+                    </p>
+                    <p className="text-xs text-green-600 dark:text-green-400">
+                      Keep tracking your emotional journey
+                    </p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-center p-6 text-muted-foreground">
+                <p>Start journaling to see insights about your writing patterns!</p>
               </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-              <Heart className="h-5 w-5 text-green-500" />
-              <div>
-                <p className="text-sm font-medium text-green-800 dark:text-green-300">
-                  Positive trend detected
-                </p>
-                <p className="text-xs text-green-600 dark:text-green-400">
-                  Your mood has improved 15% over the last two weeks
-                </p>
-              </div>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>

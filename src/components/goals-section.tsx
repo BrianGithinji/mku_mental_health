@@ -1,72 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Progress } from './ui/progress';
 import { Badge } from './ui/badge';
 import { Input } from './ui/input';
 import { Plus, Target, CheckCircle2, Clock, TrendingUp } from 'lucide-react';
-
-interface Goal {
-  id: string;
-  title: string;
-  description: string;
-  progress: number;
-  target: number;
-  category: string;
-  deadline: string;
-  completed: boolean;
-}
-
-const mockGoals: Goal[] = [
-  {
-    id: '1',
-    title: 'Daily Meditation',
-    description: 'Meditate for 10 minutes every day',
-    progress: 18,
-    target: 30,
-    category: 'Mindfulness',
-    deadline: '2024-10-17',
-    completed: false,
-  },
-  {
-    id: '2',
-    title: 'Journal Entries',
-    description: 'Write in journal 3 times per week',
-    progress: 8,
-    target: 12,
-    category: 'Reflection',
-    deadline: '2024-09-30',
-    completed: false,
-  },
-  {
-    id: '3',
-    title: 'Exercise Routine',
-    description: 'Complete 20 workout sessions',
-    progress: 15,
-    target: 20,
-    category: 'Physical Health',
-    deadline: '2024-10-01',
-    completed: false,
-  },
-  {
-    id: '4',
-    title: 'Sleep Schedule',
-    description: 'Maintain consistent 8-hour sleep for 2 weeks',
-    progress: 14,
-    target: 14,
-    category: 'Sleep',
-    deadline: '2024-09-20',
-    completed: true,
-  },
-];
+import { dataService, Goal } from '../utils/dataService';
 
 export function GoalsSection() {
-  const [goals, setGoals] = useState<Goal[]>(mockGoals);
+  const [goals, setGoals] = useState<Goal[]>([]);
   const [newGoal, setNewGoal] = useState('');
+
+  useEffect(() => {
+    loadGoals();
+  }, []);
+
+  const loadGoals = () => {
+    const userGoals = dataService.getGoals();
+    setGoals(userGoals);
+  };
 
   const completedGoals = goals.filter(goal => goal.completed).length;
   const totalGoals = goals.length;
-  const overallProgress = (completedGoals / totalGoals) * 100;
+  const overallProgress = totalGoals > 0 ? (completedGoals / totalGoals) * 100 : 0;
 
   const getCategoryColor = (category: string) => {
     const colors: { [key: string]: string } = {
@@ -74,39 +30,27 @@ export function GoalsSection() {
       'Reflection': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
       'Physical Health': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
       'Sleep': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300',
+      'Personal': 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300',
     };
     return colors[category] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
   };
 
   const addGoal = () => {
     if (newGoal.trim()) {
-      const goal: Goal = {
-        id: Date.now().toString(),
-        title: newGoal,
-        description: 'Custom goal',
-        progress: 0,
-        target: 10,
-        category: 'Personal',
-        deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        completed: false,
-      };
-      setGoals([...goals, goal]);
+      const deadline = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      dataService.addGoal(newGoal, 'Custom goal', 10, 'Personal', deadline);
       setNewGoal('');
+      loadGoals();
     }
   };
 
   const updateGoalProgress = (goalId: string, increment: number) => {
-    setGoals(goals.map(goal => {
-      if (goal.id === goalId) {
-        const newProgress = Math.min(goal.target, Math.max(0, goal.progress + increment));
-        return {
-          ...goal,
-          progress: newProgress,
-          completed: newProgress >= goal.target
-        };
-      }
-      return goal;
-    }));
+    const goal = goals.find(g => g.id === goalId);
+    if (goal) {
+      const newProgress = Math.min(goal.target, Math.max(0, goal.progress + increment));
+      dataService.updateGoalProgress(goalId, newProgress);
+      loadGoals();
+    }
   };
 
   return (
@@ -157,7 +101,7 @@ export function GoalsSection() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {goals.map((goal) => {
+          {goals.length > 0 ? goals.map((goal) => {
             const progressPercentage = (goal.progress / goal.target) * 100;
             const isOverdue = new Date(goal.deadline) < new Date() && !goal.completed;
             
@@ -223,7 +167,11 @@ export function GoalsSection() {
                 </div>
               </div>
             );
-          })}
+          }) : (
+            <div className="text-center p-6 text-muted-foreground">
+              <p>No goals yet. Add your first goal below!</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 

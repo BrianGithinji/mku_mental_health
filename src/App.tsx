@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { Badge } from './components/ui/badge';
@@ -10,6 +10,7 @@ import { MindfulnessSection } from './components/mindfulness-section';
 import { ResourcesSection } from './components/resources-section';
 import { LoginForm } from './components/auth/LoginForm';
 import { RegisterForm } from './components/auth/RegisterForm';
+import { dataService, UserStats } from './utils/dataService';
 import mkuLogo from 'figma:asset/14595c554c029d987635aae1d898f92cd008b33f.png';
 import { 
   Heart, 
@@ -30,6 +31,7 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [user, setUser] = useState<{ firstName: string; lastName: string; email: string } | null>(null);
+  const [userStats, setUserStats] = useState<UserStats>({ moodAverage: 0, currentStreak: 0, weeklyGoalProgress: 0, totalJournalEntries: 0, totalMindfulnessMinutes: 0 });
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -48,12 +50,25 @@ export default function App() {
       setUser({ firstName, lastName: '', email });
     }
     setIsAuthenticated(true);
+    loadUserStats();
   };
 
   const handleRegister = (userData: any) => {
     setUser({ firstName: userData.firstName, lastName: userData.lastName, email: userData.email });
     setIsAuthenticated(true);
+    loadUserStats();
   };
+
+  const loadUserStats = () => {
+    const stats = dataService.getUserStats();
+    setUserStats(stats);
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadUserStats();
+    }
+  }, [isAuthenticated]);
 
   const handleLogout = () => {
     setIsAuthenticated(false);
@@ -163,16 +178,16 @@ export default function App() {
             </div>
             <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center sm:gap-4 sm:justify-end">
               <div className="text-center">
-                <p className="text-lg sm:text-2xl font-bold text-green-600">8.2</p>
-                <p className="text-xs text-muted-foreground">Current Mood</p>
+                <p className="text-lg sm:text-2xl font-bold text-green-600">{userStats.moodAverage > 0 ? userStats.moodAverage.toFixed(1) : '-'}</p>
+                <p className="text-xs text-muted-foreground">Mood Average</p>
               </div>
               <div className="text-center">
-                <p className="text-lg sm:text-2xl font-bold text-blue-600">12</p>
+                <p className="text-lg sm:text-2xl font-bold text-blue-600">{userStats.currentStreak}</p>
                 <p className="text-xs text-muted-foreground">Day Streak</p>
               </div>
               <div className="text-center">
-                <p className="text-lg sm:text-2xl font-bold text-purple-600">85%</p>
-                <p className="text-xs text-muted-foreground">Weekly Goal</p>
+                <p className="text-lg sm:text-2xl font-bold text-purple-600">{userStats.weeklyGoalProgress.toFixed(0)}%</p>
+                <p className="text-xs text-muted-foreground">Goal Progress</p>
               </div>
             </div>
           </div>
@@ -187,7 +202,7 @@ export default function App() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Mood Average</p>
-                <p className="text-lg font-semibold">7.8/10</p>
+                <p className="text-lg font-semibold">{userStats.moodAverage > 0 ? `${userStats.moodAverage.toFixed(1)}/10` : 'No data'}</p>
               </div>
             </CardContent>
           </Card>
@@ -199,7 +214,7 @@ export default function App() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Goals Progress</p>
-                <p className="text-lg font-semibold">3/4 Active</p>
+                <p className="text-lg font-semibold">{userStats.weeklyGoalProgress.toFixed(0)}% Complete</p>
               </div>
             </CardContent>
           </Card>
@@ -211,7 +226,7 @@ export default function App() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Journal Entries</p>
-                <p className="text-lg font-semibold">23 This Month</p>
+                <p className="text-lg font-semibold">{userStats.totalJournalEntries} Total</p>
               </div>
             </CardContent>
           </Card>
@@ -223,7 +238,7 @@ export default function App() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Mindfulness</p>
-                <p className="text-lg font-semibold">245 Minutes</p>
+                <p className="text-lg font-semibold">{userStats.totalMindfulnessMinutes} Minutes</p>
               </div>
             </CardContent>
           </Card>
