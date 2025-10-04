@@ -37,11 +37,16 @@ export default function App() {
   };
 
   const handleLogin = (email: string, password: string) => {
-    // Simple authentication - in real app, validate against backend
-    // Extract name from email for demo purposes
-    const emailName = email.split('@')[0];
-    const firstName = emailName.charAt(0).toUpperCase() + emailName.slice(1);
-    setUser({ firstName, lastName: '', email });
+    // Get user data from localStorage
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    if (currentUser.firstName && currentUser.lastName) {
+      setUser({ firstName: currentUser.firstName, lastName: currentUser.lastName, email: currentUser.email });
+    } else {
+      // Fallback if no stored user data
+      const emailName = email.split('@')[0];
+      const firstName = emailName.charAt(0).toUpperCase() + emailName.slice(1);
+      setUser({ firstName, lastName: '', email });
+    }
     setIsAuthenticated(true);
   };
 
