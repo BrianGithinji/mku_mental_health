@@ -18,14 +18,14 @@ export function JournalSection() {
     loadJournalEntries();
   }, []);
 
-  const loadJournalEntries = () => {
-    const userEntries = dataService.getJournalEntries();
+  const loadJournalEntries = async () => {
+    const userEntries = await dataService.getJournalEntries();
     setEntries(userEntries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (newEntry.title && newEntry.content) {
-      dataService.addJournalEntry(newEntry.title, newEntry.content, newEntry.mood, newEntry.tags);
+      await dataService.addJournalEntry(newEntry.title, newEntry.content, newEntry.mood, newEntry.tags);
       setNewEntry({ title: '', content: '', mood: 5, tags: [] });
       setIsWriting(false);
       loadJournalEntries();
@@ -174,7 +174,7 @@ export function JournalSection() {
         <CardContent>
           <div className="space-y-4">
             {entries.length > 0 ? entries.map((entry) => (
-              <div key={entry.id} className="p-3 sm:p-4 border rounded-lg space-y-3">
+              <div key={entry._id} className="p-3 sm:p-4 border rounded-lg space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-sm sm:text-base">{entry.title}</h4>

@@ -15,8 +15,8 @@ export function GoalsSection() {
     loadGoals();
   }, []);
 
-  const loadGoals = () => {
-    const userGoals = dataService.getGoals();
+  const loadGoals = async () => {
+    const userGoals = await dataService.getGoals();
     setGoals(userGoals);
   };
 
@@ -35,20 +35,20 @@ export function GoalsSection() {
     return colors[category] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
   };
 
-  const addGoal = () => {
+  const addGoal = async () => {
     if (newGoal.trim()) {
       const deadline = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      dataService.addGoal(newGoal, 'Custom goal', 10, 'Personal', deadline);
+      await dataService.addGoal(newGoal, 'Custom goal', 10, 'Personal', deadline);
       setNewGoal('');
       loadGoals();
     }
   };
 
-  const updateGoalProgress = (goalId: string, increment: number) => {
+  const updateGoalProgress = async (goalId: string, increment: number) => {
     const goal = goals.find(g => g.id === goalId);
     if (goal) {
       const newProgress = Math.min(goal.target, Math.max(0, goal.progress + increment));
-      dataService.updateGoalProgress(goalId, newProgress);
+      await dataService.updateGoalProgress(goalId, newProgress);
       loadGoals();
     }
   };
@@ -106,7 +106,7 @@ export function GoalsSection() {
             const isOverdue = new Date(goal.deadline) < new Date() && !goal.completed;
             
             return (
-              <div key={goal.id} className={`p-3 sm:p-4 border rounded-lg space-y-3 ${goal.completed ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : ''}`}>
+              <div key={goal._id} className={`p-3 sm:p-4 border rounded-lg space-y-3 ${goal.completed ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : ''}`}>
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
@@ -133,7 +133,7 @@ export function GoalsSection() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => updateGoalProgress(goal.id, -1)}
+                        onClick={() => updateGoalProgress(goal._id!, -1)}
                         disabled={goal.progress <= 0}
                         className="h-8 w-8 p-0"
                       >
@@ -142,7 +142,7 @@ export function GoalsSection() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => updateGoalProgress(goal.id, 1)}
+                        onClick={() => updateGoalProgress(goal._id!, 1)}
                         disabled={goal.progress >= goal.target}
                         className="h-8 w-8 p-0"
                       >

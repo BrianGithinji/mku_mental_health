@@ -25,8 +25,8 @@ export function MoodTracker() {
     loadMoodData();
   }, []);
 
-  const loadMoodData = () => {
-    const entries = dataService.getMoodEntries();
+  const loadMoodData = async () => {
+    const entries = await dataService.getMoodEntries();
     setMoodEntries(entries);
     
     // Get last 7 days of mood data
@@ -43,9 +43,9 @@ export function MoodTracker() {
     setMoodData(last7Days);
   };
 
-  const handleMoodSelect = (moodLevel: number) => {
+  const handleMoodSelect = async (moodLevel: number) => {
     setSelectedMood(moodLevel);
-    dataService.addMoodEntry(moodLevel);
+    await dataService.addMoodEntry(moodLevel);
     loadMoodData();
   };
 

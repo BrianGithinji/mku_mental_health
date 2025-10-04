@@ -59,8 +59,8 @@ export default function App() {
     loadUserStats();
   };
 
-  const loadUserStats = () => {
-    const stats = dataService.getUserStats();
+  const loadUserStats = async () => {
+    const stats = await dataService.getUserStats();
     setUserStats(stats);
   };
 

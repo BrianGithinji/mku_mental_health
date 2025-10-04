@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import clientPromise from '../../lib/mongodb';
 import bcrypt from 'bcryptjs';
 
 export default async function handler(req, res) {
@@ -9,12 +9,15 @@ export default async function handler(req, res) {
   const { firstName, lastName, email, studentId, course, password } = req.body;
 
   try {
+    const client = await clientPromise;
+    const db = client.db('mental_health');
+
     // Check if user exists
-    const existingUser = await sql`
-      SELECT id FROM users WHERE email = ${email} OR student_id = ${studentId}
-    `;
+    const existingUser = await db.collection('users').findOne({
+      $or: [{ email }, { student_id: studentId }]
+    });
     
-    if (existingUser.rows.length > 0) {
+    if (existingUser) {
       return res.status(400).json({ error: 'User already exists' });
     }
 
@@ -22,15 +25,24 @@ export default async function handler(req, res) {
     const passwordHash = await bcrypt.hash(password, 10);
 
     // Insert user
-    const result = await sql`
-      INSERT INTO users (first_name, last_name, email, student_id, course, password_hash)
-      VALUES (${firstName}, ${lastName}, ${email}, ${studentId}, ${course}, ${passwordHash})
-      RETURNING id, first_name, last_name, email, student_id, course
-    `;
+    const result = await db.collection('users').insertOne({
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      student_id: studentId,
+      course,
+      password_hash: passwordHash,
+      created_at: new Date()
+    });
+
+    const newUser = await db.collection('users').findOne(
+      { _id: result.insertedId },
+      { projection: { password_hash: 0 } }
+    );
 
     res.status(201).json({ 
       success: true, 
-      user: result.rows[0] 
+      user: newUser 
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

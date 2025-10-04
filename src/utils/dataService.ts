@@ -1,15 +1,15 @@
 // Data service for managing user mental health data
 export interface MoodEntry {
-  id: string;
-  userId: string;
+  _id?: string;
+  user_id: string;
   date: string;
   mood: number;
   note?: string;
 }
 
 export interface Goal {
-  id: string;
-  userId: string;
+  _id?: string;
+  user_id: string;
   title: string;
   description: string;
   progress: number;
@@ -17,12 +17,12 @@ export interface Goal {
   category: string;
   deadline: string;
   completed: boolean;
-  createdAt: string;
+  created_at: string;
 }
 
 export interface JournalEntry {
-  id: string;
-  userId: string;
+  _id?: string;
+  user_id: string;
   date: string;
   title: string;
   content: string;
@@ -41,120 +41,140 @@ export interface UserStats {
 class DataService {
   private getCurrentUserId(): string {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    return currentUser.id || 'default';
+    return currentUser.id || '1';
+  }
+
+  private async apiCall(endpoint: string, options: RequestInit = {}) {
+    const userId = this.getCurrentUserId();
+    const response = await fetch(endpoint, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        'user-id': userId,
+        ...options.headers,
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API call failed: ${response.statusText}`);
+    }
+    
+    return response.json();
   }
 
   // Mood tracking methods
-  getMoodEntries(): MoodEntry[] {
-    const userId = this.getCurrentUserId();
-    const entries = JSON.parse(localStorage.getItem('moodEntries') || '[]');
-    return entries.filter((entry: MoodEntry) => entry.userId === userId);
+  async getMoodEntries(): Promise<MoodEntry[]> {
+    try {
+      return await this.apiCall('/api/data/mood');
+    } catch (error) {
+      console.error('Failed to fetch mood entries:', error);
+      return [];
+    }
   }
 
-  addMoodEntry(mood: number, note?: string): MoodEntry {
-    const userId = this.getCurrentUserId();
-    const entries = JSON.parse(localStorage.getItem('moodEntries') || '[]');
-    const newEntry: MoodEntry = {
-      id: Date.now().toString(),
-      userId,
-      date: new Date().toISOString().split('T')[0],
-      mood,
-      note
-    };
-    entries.push(newEntry);
-    localStorage.setItem('moodEntries', JSON.stringify(entries));
-    return newEntry;
+  async addMoodEntry(mood: number, note?: string): Promise<MoodEntry | null> {
+    try {
+      return await this.apiCall('/api/data/mood', {
+        method: 'POST',
+        body: JSON.stringify({ mood, note }),
+      });
+    } catch (error) {
+      console.error('Failed to add mood entry:', error);
+      return null;
+    }
   }
 
   // Goals methods
-  getGoals(): Goal[] {
-    const userId = this.getCurrentUserId();
-    const goals = JSON.parse(localStorage.getItem('goals') || '[]');
-    return goals.filter((goal: Goal) => goal.userId === userId);
+  async getGoals(): Promise<Goal[]> {
+    try {
+      return await this.apiCall('/api/data/goals');
+    } catch (error) {
+      console.error('Failed to fetch goals:', error);
+      return [];
+    }
   }
 
-  addGoal(title: string, description: string, target: number, category: string, deadline: string): Goal {
-    const userId = this.getCurrentUserId();
-    const goals = JSON.parse(localStorage.getItem('goals') || '[]');
-    const newGoal: Goal = {
-      id: Date.now().toString(),
-      userId,
-      title,
-      description,
-      progress: 0,
-      target,
-      category,
-      deadline,
-      completed: false,
-      createdAt: new Date().toISOString()
-    };
-    goals.push(newGoal);
-    localStorage.setItem('goals', JSON.stringify(goals));
-    return newGoal;
+  async addGoal(title: string, description: string, target: number, category: string, deadline: string): Promise<Goal | null> {
+    try {
+      return await this.apiCall('/api/data/goals', {
+        method: 'POST',
+        body: JSON.stringify({ title, description, target, category, deadline }),
+      });
+    } catch (error) {
+      console.error('Failed to add goal:', error);
+      return null;
+    }
   }
 
-  updateGoalProgress(goalId: string, progress: number): void {
-    const goals = JSON.parse(localStorage.getItem('goals') || '[]');
-    const updatedGoals = goals.map((goal: Goal) => {
-      if (goal.id === goalId) {
-        return {
-          ...goal,
-          progress,
-          completed: progress >= goal.target
-        };
-      }
-      return goal;
-    });
-    localStorage.setItem('goals', JSON.stringify(updatedGoals));
+  async updateGoalProgress(goalId: string, progress: number): Promise<void> {
+    try {
+      await this.apiCall('/api/data/goals', {
+        method: 'PUT',
+        body: JSON.stringify({ goalId, progress }),
+      });
+    } catch (error) {
+      console.error('Failed to update goal progress:', error);
+    }
   }
 
   // Journal methods
-  getJournalEntries(): JournalEntry[] {
-    const userId = this.getCurrentUserId();
-    const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
-    return entries.filter((entry: JournalEntry) => entry.userId === userId);
+  async getJournalEntries(): Promise<JournalEntry[]> {
+    try {
+      const entries = await this.apiCall('/api/data/journal');
+      return entries;
+    } catch (error) {
+      console.error('Failed to fetch journal entries:', error);
+      return [];
+    }
   }
 
-  addJournalEntry(title: string, content: string, mood: number, tags: string[]): JournalEntry {
-    const userId = this.getCurrentUserId();
-    const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
-    const newEntry: JournalEntry = {
-      id: Date.now().toString(),
-      userId,
-      date: new Date().toISOString().split('T')[0],
-      title,
-      content,
-      mood,
-      tags
-    };
-    entries.push(newEntry);
-    localStorage.setItem('journalEntries', JSON.stringify(entries));
-    return newEntry;
+  async addJournalEntry(title: string, content: string, mood: number, tags: string[]): Promise<JournalEntry | null> {
+    try {
+      return await this.apiCall('/api/data/journal', {
+        method: 'POST',
+        body: JSON.stringify({ title, content, mood, tags }),
+      });
+    } catch (error) {
+      console.error('Failed to add journal entry:', error);
+      return null;
+    }
   }
 
   // Statistics methods
-  getUserStats(): UserStats {
-    const moodEntries = this.getMoodEntries();
-    const goals = this.getGoals();
-    const journalEntries = this.getJournalEntries();
+  async getUserStats(): Promise<UserStats> {
+    try {
+      const [moodEntries, goals, journalEntries] = await Promise.all([
+        this.getMoodEntries(),
+        this.getGoals(),
+        this.getJournalEntries()
+      ]);
 
-    const moodAverage = moodEntries.length > 0 
-      ? moodEntries.reduce((sum, entry) => sum + entry.mood, 0) / moodEntries.length 
-      : 0;
+      const moodAverage = moodEntries.length > 0 
+        ? moodEntries.reduce((sum, entry) => sum + entry.mood, 0) / moodEntries.length 
+        : 0;
 
-    const completedGoals = goals.filter(goal => goal.completed).length;
-    const weeklyGoalProgress = goals.length > 0 ? (completedGoals / goals.length) * 100 : 0;
+      const completedGoals = goals.filter(goal => goal.completed).length;
+      const weeklyGoalProgress = goals.length > 0 ? (completedGoals / goals.length) * 100 : 0;
 
-    // Calculate streak (simplified - consecutive days with mood entries)
-    const currentStreak = this.calculateMoodStreak(moodEntries);
+      const currentStreak = this.calculateMoodStreak(moodEntries);
 
-    return {
-      moodAverage,
-      currentStreak,
-      weeklyGoalProgress,
-      totalJournalEntries: journalEntries.length,
-      totalMindfulnessMinutes: 0 // Placeholder for mindfulness tracking
-    };
+      return {
+        moodAverage,
+        currentStreak,
+        weeklyGoalProgress,
+        totalJournalEntries: journalEntries.length,
+        totalMindfulnessMinutes: 0
+      };
+    } catch (error) {
+      console.error('Failed to get user stats:', error);
+      return {
+        moodAverage: 0,
+        currentStreak: 0,
+        weeklyGoalProgress: 0,
+        totalJournalEntries: 0,
+        totalMindfulnessMinutes: 0
+      };
+    }
   }
 
   private calculateMoodStreak(entries: MoodEntry[]): number {

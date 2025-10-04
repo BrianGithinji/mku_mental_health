@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import clientPromise from '../../lib/mongodb';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -10,17 +10,15 @@ export default async function handler(req, res) {
   const { email, password } = req.body;
 
   try {
-    // Find user
-    const result = await sql`
-      SELECT id, first_name, last_name, email, student_id, course, password_hash
-      FROM users WHERE email = ${email}
-    `;
+    const client = await clientPromise;
+    const db = client.db('mental_health');
 
-    if (result.rows.length === 0) {
+    // Find user
+    const user = await db.collection('users').findOne({ email });
+
+    if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-
-    const user = result.rows[0];
 
     // Verify password
     const isValid = await bcrypt.compare(password, user.password_hash);
@@ -30,7 +28,7 @@ export default async function handler(req, res) {
 
     // Create JWT token
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user._id, email: user.email },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
