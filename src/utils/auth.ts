@@ -10,7 +10,7 @@ export interface User {
 
 export const registerUser = async (userData: { firstName: string; lastName: string; email: string; studentId: string; course: string; gender: string; password: string }): Promise<User> => {
   try {
-    const response = await fetch('/api/auth/register', {
+    const response = await fetch('http://localhost:5000/api/auth/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ export const registerUser = async (userData: { firstName: string; lastName: stri
 
 export const loginUser = async (email: string, password: string): Promise<User> => {
   try {
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch('http://localhost:5000/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

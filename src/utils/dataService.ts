@@ -46,7 +46,7 @@ class DataService {
 
   private async apiCall(endpoint: string, options: RequestInit = {}) {
     const userId = this.getCurrentUserId();
-    const response = await fetch(endpoint, {
+    const response = await fetch(`http://localhost:5000${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
