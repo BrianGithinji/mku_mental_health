@@ -174,7 +174,7 @@ export default function App() {
           <div className={`relative p-6 rounded-2xl border-2 ${user?.gender === 'female' ? 'border-pink-300 bg-pink-50/30 dark:bg-pink-900/10 animate-pulse-border-pink' : 'border-blue-300 bg-blue-50/30 dark:bg-blue-900/10 animate-pulse-border'}`}>
             <div className="flex flex-col gap-4">
               <div>
-                <h2 className="text-xl sm:text-2xl font-semibold mb-2">{getTimeBasedGreeting()}, {user?.firstName}{user?.lastName ? ` ${user.lastName}` : ''}! 👋</h2>
+                <h2 className="text-xl sm:text-2xl font-semibold mb-2">{getTimeBasedGreeting()}, {user?.firstName}{user?.lastName ? ` ${user.lastName}` : ''}!</h2>
                 <p className="text-sm sm:text-base text-muted-foreground">{currentDate}</p>
               </div>
               <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center sm:gap-4 sm:justify-end">
