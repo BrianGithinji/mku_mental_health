@@ -46,7 +46,8 @@ class DataService {
 
   private async apiCall(endpoint: string, options: RequestInit = {}) {
     const userId = this.getCurrentUserId();
-    const response = await fetch(`http://localhost:5000${endpoint}`, {
+    const netlifyEndpoint = endpoint.replace('/api/data/', '/.netlify/functions/data-');
+    const response = await fetch(netlifyEndpoint, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
