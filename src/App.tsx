@@ -141,6 +141,7 @@ export default function App() {
                 <div className="flex flex-col">
                   <h1 className="text-lg font-semibold leading-tight">Mount Kenya University</h1>
                   <p className="text-sm text-muted-foreground leading-tight">Mental Health Awareness Program</p>
+                  <p className="text-xs italic text-muted-foreground/80 leading-tight">mentis salus scientia et auxilium</p>
                 </div>
               </div>
               <Badge variant="secondary" className="hidden lg:inline-flex">

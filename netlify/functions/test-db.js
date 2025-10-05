@@ -19,13 +19,19 @@ exports.handler = async (event, context) => {
       };
     }
 
-    const client = new MongoClient(process.env.MONGODB_URI);
+    const client = new MongoClient(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
+      socketTimeoutMS: 5000
+    });
     await client.connect();
     console.log('Connected to MongoDB successfully');
     
     const db = client.db('mental_health');
-    const collections = await db.listCollections().toArray();
-    console.log('Collections:', collections.map(c => c.name));
+    
+    // Test with a simple ping instead of listing collections
+    await db.admin().ping();
+    console.log('MongoDB ping successful');
     
     await client.close();
     
