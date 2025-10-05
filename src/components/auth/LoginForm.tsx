@@ -38,6 +38,7 @@ export function LoginForm({ onLogin, onSwitchToRegister }: LoginFormProps) {
           <CardDescription>
             Sign in to your Mental Health Dashboard
           </CardDescription>
+          <p className="text-xs italic text-muted-foreground/80 mt-2">mentis salus scientia et auxilium</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -65,6 +65,7 @@ export function RegisterForm({ onRegister, onSwitchToLogin }: RegisterFormProps)
           <CardDescription>
             Join the Mental Health Dashboard
           </CardDescription>
+          <p className="text-xs italic text-muted-foreground/80 mt-2">mentis salus scientia et auxilium</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
